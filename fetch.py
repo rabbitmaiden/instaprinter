@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import sys
 import time
 import requests
@@ -47,7 +48,13 @@ def main():
   banner_file = 'banners/'+tag+'.jpg'
   banner = Image.open(banner_file)
 
-  border = (25, 30)
+  # OSX 
+  #border = (25, 30)
+  #dpi = (168, 168)
+
+  # rPi
+  border = (0, 7)
+  dpi = (168, 168)
 
   # loop forever
   while True:
@@ -60,27 +67,27 @@ def main():
     json = fetchtag(tag, args)
     
     if 'data' in json and len(json['data']) > 0:
-      say ("found " + str(len(json['data'])) + " photos")
+      say ("Found " + str(len(json['data'])) + " photos")
       for photo in json['data']:
         photo_id = photo['id']
         photo_name = 'downloaded/'+photo_id+'.jpg'
 
         # check if we have this one already
         if os.path.isfile(photo_name):
-          say("skipping " + photo_id + " - already downloaded")
+          #say("skipping " + photo_id + " - already downloaded")
           continue
         elif photo['type'] != 'image':
           #say("skipping " + photo_id + " - not an image")
           continue
 
         # download the photo
-        say("downloading "+ photo_id)
+        say("Downloading photo from "+photo['user']['username'] + " (" + photo_id + ")" )
 
         image = downloadphoto(photo['images']['standard_resolution']['url'])
 
         # resize if smaller than 640
         if image.size[0] != 640:
-          say("resizing " + photo_id + " to 640")
+          #say("resizing " + photo_id + " to 640")
           image = image.resize((640, 640))
 
         
@@ -90,7 +97,7 @@ def main():
         final.paste(image, (border[0],border[1]))
         final.paste(banner, (border[0],border[1] + 640))
 
-        final.save(photo_name, 'jpeg', dpi=(168,168))
+        final.save(photo_name, 'jpeg', dpi=dpi)
 
         del final
         del image

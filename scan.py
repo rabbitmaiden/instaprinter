@@ -6,10 +6,9 @@ import shutil
 def main():
 
 
-  dldir = 'downloaded/'
-  prdir = 'printed/'
-
   while True:
+    dldir = 'downloaded/'
+    prdir = 'printed/'
     for f in os.listdir(dldir):
       if not re.match(r'.*\.jpg$', f):
         continue
