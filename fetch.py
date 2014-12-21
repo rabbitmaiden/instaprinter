@@ -53,7 +53,7 @@ def main():
   #dpi = (168, 168)
 
   # rPi
-  border = (0, 7)
+  border = (10, 0)
   dpi = (168, 168)
 
   # loop forever
