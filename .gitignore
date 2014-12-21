@@ -55,3 +55,6 @@ target/
 
 .DS_Store
 .swp
+
+downloaded/*.jpg
+printed/*.jpg
