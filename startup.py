@@ -14,9 +14,9 @@ os.chdir('/home/pi/instaprinter')
 uname = subprocess.check_output(['uname']).strip()
 rpi = (uname == 'Linux')
 if rpi:
-    print (colored("Hello from the Raspberry Pi", "green"))
+    print (colored("Hello from the Raspberry Pi!!", "yellow"))
 else:
-    print (colored("Hello from a mac laptop", "green"))
+    print (colored("Hello from a mac laptop", "yellow"))
     print (colored("Set this up for yourself", "red"))
     sys.exit(1)
     
@@ -32,15 +32,15 @@ sys.stdout.write(colored("Do we have internet connectivity? ", 'green'))
 
 r = requests.get('http://www.google.com/')
 if r.status_code != 200:
-    print (colored("\nCould not connect to the internet, please fix and restart", 'red'))
+    print (colored("\nCould not connect to the internet", 'red'))
     sys.exit(1)
 
 sys.stdout.write(colored("Yes!\n", "cyan"))
-sys.stdout.write(colored("Updating codebase from github: ", 'green'))
+sys.stdout.write(colored("Updating codebase: ", 'green'))
 
 git = subprocess.call(["git", "pull", "origin", "master"])
 if git != 0:
-    print (colored("\nCould not update codebase, please fix and restart", 'red'))
+    print (colored("\nCould not update codebase", 'red'))
     sys.exit(1)
 
 sys.stdout.write(colored("Success!\n", 'cyan'))
@@ -48,15 +48,15 @@ sys.stdout.write(colored("Do we have a printer? ", "green"))
 
 lpinfo = subprocess.check_output(['lpinfo', '--include-schemes', 'usb', '-v'])
 if lpinfo == '':
-    print (colored("\nCould not find the printer, please fix and restart", 'red'))
+    print (colored("\nCould not find the printer", 'red'))
     sys.exit(1)
 
 sys.stdout.write(colored("Yes!\n", "cyan"))
 
 tag = open('tag.txt').read().strip();
 
-print (colored("The current tag is: ", "green") + colored(" "+tag, "blue"))
+print (colored("The current tag is:", "green") + colored(" "+tag, "yellow"))
 
-answer = raw_input(colored("Do you want to start the printer? [y/n]: ", "magenta"))
+answer = raw_input(colored("Start the printer? [y/n]: ", "magenta"))
 if answer == 'y' or answer == 'Y':
   subprocess.call(["./fetch.py"])
