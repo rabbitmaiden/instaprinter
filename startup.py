@@ -16,9 +16,10 @@ rpi = os == 'Linux'
 if rpi:
     print "Hello from the Raspberry Pi"
 else:
-    print "Hello from a mac laptop"
+    print colored("Hello from a mac laptop", "green")
+    print colored("Set this up for yourself", "red")
+    sys.exit(1)
     
-
 
 print colored("Do we have an IP address?", 'green')
 ip = subprocess.check_output(['hostname', '-I']);
