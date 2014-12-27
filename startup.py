@@ -1,43 +1,62 @@
 #!/usr/bin/python
-
 import subprocess
 import re
 import sys
 import requests
 import os
 from termcolor import colored
+import pprint
 
 
+#just in case
+os.chdir('/home/pi/instaprinter')
 
-os = subprocess.check_output(['uname'])
-rpi = os == 'Linux'
-
-
+uname = subprocess.check_output(['uname']).strip()
+rpi = (uname == 'Linux')
 if rpi:
-    print "Hello from the Raspberry Pi"
+    print (colored("Hello from the Raspberry Pi", "green"))
 else:
-    print colored("Hello from a mac laptop", "green")
-    print colored("Set this up for yourself", "red")
+    print (colored("Hello from a mac laptop", "green"))
+    print (colored("Set this up for yourself", "red"))
     sys.exit(1)
     
 
-print colored("Do we have an IP address?", 'green')
+sys.stdout.write(colored("Do we have an IP address? ", 'green'))
 ip = subprocess.check_output(['hostname', '-I']);
 if not re.search(r'[\d]+\.[\d]+\.[\d]+\.[\d]+', ip):
-    print colored("No ip address, please fix and restart", 'red')
+    print (colored("\nNo ip address, please fix and restart", 'red'))
     sys.exit(1)
 
-print colored("We do! Now checking for internet connectivity", 'green')
+sys.stdout.write(colored("Yes!\n", "cyan"))
+sys.stdout.write(colored("Do we have internet connectivity? ", 'green'))
+
 r = requests.get('http://www.google.com/')
 if r.status_code != 200:
-    print colored("Could not connect to the internet, please fix and restart", 'red')
+    print (colored("\nCould not connect to the internet, please fix and restart", 'red'))
     sys.exit(1)
 
-print colored("Okay we have internet, trying to update our codebase", 'green')
+sys.stdout.write(colored("Yes!\n", "cyan"))
+sys.stdout.write(colored("Updating codebase from github: ", 'green'))
 
 git = subprocess.call(["git", "pull", "origin", "master"])
 if git != 0:
-    print colored("Could not update codebase, please fix and restart", 'red')
+    print (colored("\nCould not update codebase, please fix and restart", 'red'))
     sys.exit(1)
 
-print colored("Okay we updated the codebase!", 'green')
+sys.stdout.write(colored("Success!\n", 'cyan'))
+sys.stdout.write(colored("Do we have a printer? ", "green"))
+
+lpinfo = subprocess.check_output(['lpinfo', '--include-schemes', 'usb', '-v'])
+if lpinfo == '':
+    print (colored("\nCould not find the printer, please fix and restart", 'red'))
+    sys.exit(1)
+
+sys.stdout.write(colored("Yes!\n", "cyan"))
+
+tag = open('tag.txt').read().strip();
+
+print (colored("The current tag is: ", "green") + colored(" "+tag, "blue"))
+
+answer = raw_input(colored("Do you want to start the printer? [y/n]: ", "magenta"))
+if answer == 'y' or answer == 'Y':
+  subprocess.call(["./fetch.py"])

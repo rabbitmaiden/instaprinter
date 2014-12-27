@@ -3,12 +3,15 @@ import sys
 import time
 import requests
 import pprint
+import os, re, subprocess, shutil
 import os.path
+import time
 from PIL import Image
 from StringIO import StringIO
+from termcolor import colored
 
 def say (msg):
-  print(msg)
+  print colored('[' + time.strftime('%H:%M:%S') + '] ' + msg, "green")
   return
 
 def fetchtag ( tag, args = {}):
@@ -43,8 +46,14 @@ def downloadphoto ( url ):
 def main():
   min_tag_id = False
 
+  tag = open('tag.txt').read().strip();
 
-  tag = 'banjonye'
+  say("Tag is "+tag)
+
+  if not tag:
+    print "Could not determine tag"
+    sys.exit(1)
+
   banner_file = 'banners/'+tag+'.jpg'
   banner = Image.open(banner_file)
 
@@ -109,7 +118,31 @@ def main():
     if 'next_min_id' in json['pagination']:
       min_tag_id = json['pagination']['next_min_id']
 
-    time.sleep(30)
+    printing()
+    time.sleep(15)
+
+def printing():
+    dldir = 'downloaded/'
+    prdir = 'printed/'
+    for f in os.listdir(dldir):
+      if not re.match(r'.*\.jpg$', f):
+        continue
+      if os.path.isfile(prdir + f):
+        continue
+
+      say("Printing "+f)
+      # osx
+      #retcode = subprocess.call(["echo", "lp", "-d", "ELIZA_DOOLEY", "-o", "media=Postcard.Fullbleed", dldir+f])
+      # rpi
+      retcode = subprocess.call(["echo", "lp", dldir+f])
+
+      if retcode == 0:
+        subprocess.call(['touch', prdir+f])
+      else:
+        print "failed to print", f
+        break
+
+
 
 if __name__ == "__main__":
     main()
