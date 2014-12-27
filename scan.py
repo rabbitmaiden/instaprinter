@@ -1,3 +1,4 @@
+#!/usr/bin/python
 import os, sys, time, re
 import subprocess
 import pprint
@@ -6,10 +7,9 @@ import shutil
 def main():
 
 
-  dldir = 'downloaded/'
-  prdir = 'printed/'
-
   while True:
+    dldir = 'downloaded/'
+    prdir = 'printed/'
     for f in os.listdir(dldir):
       if not re.match(r'.*\.jpg$', f):
         continue
@@ -17,7 +17,11 @@ def main():
         continue
 
       print "printing", f
-      retcode = subprocess.call(["echo", "lp", "-d", "ELIZA_DOOLEY", "-o", "media=Postcard.Fullbleed", dldir+f])
+      # osx
+      #retcode = subprocess.call(["echo", "lp", "-d", "ELIZA_DOOLEY", "-o", "media=Postcard.Fullbleed", dldir+f])
+      # rpi
+      retcode = subprocess.call(["lp", dldir+f])
+
       if retcode == 0:
         os.symlink(dldir+f, prdir+f)
         print "printed and copied", f
