@@ -142,7 +142,7 @@ def printing():
 def actuallyprint(filename):
   #retcode = subprocess.call(["echo", "lp", "-d", "ELIZA_DOOLEY", "-o", "media=Postcard.Fullbleed", filename])
   # rpi
-  retcode = subprocess.call(["echo", "lp", filename])
+  retcode = subprocess.call(["lp", filename])
   return retcode
 
 
