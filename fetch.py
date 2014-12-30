@@ -157,7 +157,7 @@ def reprint():
     files.sort(key=lambda x: os.path.getmtime(dldir+x), reverse=True)
   
     start = 0
-    numshown = 3
+    numshown = 5
     while True:
       print colored("Reprint photo: ", "green")
       remaining = len(files) - start
