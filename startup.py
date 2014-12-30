@@ -60,4 +60,7 @@ print (colored("The current tag is:", "green") + colored(" "+tag, "yellow"))
 #answer = raw_input(colored("Start the printer? [y/n]: ", "magenta"))
 #if answer == 'y' or answer == 'Y':
 if True:
-  subprocess.call(["./fetch.py"])
+  try:
+    subprocess.call(["./fetch.py"])
+  except KeyboardInterrupt:
+    pass
