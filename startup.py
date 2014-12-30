@@ -57,6 +57,6 @@ tag = open('tag.txt').read().strip();
 
 print (colored("The current tag is:", "green") + colored(" "+tag, "yellow"))
 
-answer = raw_input(colored("Start the printer? [y/n]: ", "magenta"))
-if answer == 'y' or answer == 'Y':
+#answer = raw_input(colored("Start the printer? [y/n]: ", "magenta"))
+#if answer == 'y' or answer == 'Y':
   subprocess.call(["./fetch.py"])

@@ -79,7 +79,8 @@ def main():
       say ("Found " + str(len(json['data'])) + " photos")
       for photo in json['data']:
         photo_id = photo['id']
-        photo_name = 'downloaded/'+photo_id+'.jpg'
+        photo_author = photo['user']['username']
+        photo_name = 'downloaded/'+photo_id+'_'+photo_author+'.jpg'
 
         # check if we have this one already
         if os.path.isfile(photo_name):
@@ -129,12 +130,8 @@ def printing():
         continue
       if os.path.isfile(prdir + f):
         continue
-
       say("Printing "+f)
-      # osx
-      #retcode = subprocess.call(["echo", "lp", "-d", "ELIZA_DOOLEY", "-o", "media=Postcard.Fullbleed", dldir+f])
-      # rpi
-      retcode = subprocess.call(["echo", "lp", dldir+f])
+      retcode = actuallyprint(dldir+f)
 
       if retcode == 0:
         subprocess.call(['touch', prdir+f])
@@ -142,7 +139,72 @@ def printing():
         print "failed to print", f
         break
 
+def actuallyprint(filename):
+  #retcode = subprocess.call(["echo", "lp", "-d", "ELIZA_DOOLEY", "-o", "media=Postcard.Fullbleed", filename])
+  # rpi
+  retcode = subprocess.call([ "echo", "lp", filename])
+  return retcode
 
+
+def reprint():
+    dldir = 'downloaded/'
+    files = []
+    for f in os.listdir(dldir):
+      if not re.match(r'.*\.jpg$', f):
+        continue
+      files.append(f)
+
+    files.sort(key=lambda x: os.path.getmtime(dldir+x), reverse=True)
+  
+    start = 0
+    numshown = 3
+    while True:
+      print colored("Reprint photo: ", "green")
+      remaining = len(files) - start
+      ceil = numshown if remaining > numshown else remaining
+      for i in range(start, start+ceil):
+        print colored(str(i)+". "+files[i], "yellow")
+      num = raw_input("Enter file number to reprint, m for more: ")
+      
+
+      if (num == 'm'):
+        start = start + numshown
+        start = 0 if start > len(files) else start
+
+      else:
+        num = int(num)
+        if files[num]:
+          say("Reprinting "+files[num])
+          actuallyprint(dldir+files[num])
+          break
+
+
+    interrupt()
+
+def run():
+  try:
+    main()
+  except KeyboardInterrupt:
+    interrupt()
+  
+
+def interrupt():
+  print colored("\nCommands available:\n p - reprint photo\n r - resume\n x - exit", "cyan")
+  command = raw_input(colored("? ", "yellow"))
+  if (command == 'p'):
+    try:
+      reprint()
+    except KeyboardInterrupt:
+      interrupt()
+    return 0
+  elif (command == 'r'):
+    run()
+    return 0
+  elif (command == 'x'):
+    sys.exit(0)
+  else:
+    interrupt()
+    return 0
 
 if __name__ == "__main__":
-    main()
+  run()
